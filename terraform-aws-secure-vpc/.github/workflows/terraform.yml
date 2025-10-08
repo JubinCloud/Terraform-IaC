@@ -1,0 +1,26 @@
+name: Terraform CI
+
+on:
+  push:
+    paths:
+      - 'modules/**'
+      - 'examples/**'
+  pull_request:
+
+jobs:
+  tf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.0
+      - name: terraform fmt
+        run: terraform -chdir=modules/vpc fmt -check
+      - name: terraform init
+        run: terraform -chdir=modules/vpc init -input=false
+      - name: terraform validate
+        run: terraform -chdir=modules/vpc validate
+      - name: terraform plan (dry)
+        run: terraform -chdir=modules/vpc plan -no-color
